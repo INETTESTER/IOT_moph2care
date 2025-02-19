@@ -77,8 +77,6 @@ export default function () {
     }
     console.log("⭐ Number of errors : " + error);
   }
-
-
   const sheetDB = 'https://script.google.com/macros/s/AKfycbyOMNksImH823XdyegUl20B16Ed7w3qOitEhd4kSacY3KQQZCbrXW1EGubx0BL3puet/exec?action=insertsummary';
   const payload2 = {
     projectname: projectname,
@@ -125,14 +123,6 @@ export default function () {
   });
 
   http.post(urlgetdata, payloadgetdata, paramsgetdata);
-  console.log("==============================");
-  console.log(`Average: ${avg}`);
-  console.log(`Min: ${min}`);
-  console.log(`Max: ${max}`);
-  console.log(`90th: ${p90}`);
-  console.log(`95th: ${p95}`);
-  console.log(`TPS: ${tps}`);
-
 }
 function formatTime(date) {
   const hours = date.getHours();
