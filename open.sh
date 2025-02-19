@@ -9,14 +9,17 @@
                      id="1"                 #เปลี่ยน id ทุกครั้งที่ยิง
                      user="1";            #จำนวนผู้ใช้งาน
                      durationx="1";         #วินาที
-                     scenario="3"           #scenario="1" ยิงเเบบกำหนด request (duration ได้แค่ 1 วินาที)
-                     cid=""                 #scenario="2" ยิงเเบบกำหนด VUs  (กำหนดว่า user x คน ใช้ระบบ x วินาที)
+                     scenario="1"           #scenario="1" ยิงเเบบกำหนด request (duration ได้แค่ 1 วินาที)
+                     cid="112"              #scenario="2" ยิงเเบบกำหนด VUs  (กำหนดว่า user x คน ใช้ระบบ x วินาที)
                                             #scenario="3" ยิงเเบบกำหนด request แต่ไม่แม่นยำ (duration กี่วินาทีก็ได้)
+                     status="normal"        #พิมพ์คำว่า "normal" เพื่อยิงโหลดเเละ upload report ไปที่ sheet
+                                            #พิมพ์คำว่า "report" upload report ล่าสุดไปที่ sheet
 ##########################################################################
 ##########################################################################
 ##########################################################################
 ##########################################################################
 ##########################################################################
+
 
 
 
@@ -61,10 +64,25 @@ fi
 filenamex="$filename-$user-$id"
 #echo $filenamex
 # รัน main/main.js ก่อนและรอให้เสร็จสิ้น
-k6 run --env id="$id" --env cid="$cid" --env projectname="$projectname" --env scenariox="$scenario"  --env user="$user" --env durationx="$durationx" --summary-export=report/"$folder_report"/"$filenamex".json main/main.js 
+#k6 run --env id="$id" --env cid="$cid" --env projectname="$projectname" --env scenariox="$scenario"  --env user="$user" --env durationx="$durationx" --summary-export=report/"$folder_report"/"$filenamex".json main/main.js 
 
 # รอจนกว่าการรัน main/main.js จะเสร็จสิ้น
-wait
+#wait
 
 # รัน main/insertdata.js
-k6 run --env filename="$filenamex" --env projectname="$projectname" --env date="$folder_report" --env id="$id" --env user="$user" --env durationx="$durationx" --env google_link="$google_sheet" gafana/insertdata.js --no-summary
+#k6 run --env filename="$filenamex" --env projectname="$projectname" --env date="$folder_report" --env id="$id" --env user="$user" --env durationx="$durationx" --env google_link="$google_sheet" gafana/insertdata.js --no-summary
+if [ "$status" = "normal" ]; then
+    # รัน main/main.js และรอจนกว่าจะเสร็จ
+    k6 run --env id="$id" --env cid="$cid" --env projectname="$projectname" --env scenariox="$scenario" --env user="$user" --env durationx="$durationx" --summary-export=report/"$folder_report"/"$filenamex".json main/main.js
+
+    # รอจนกว่าการรันเสร็จสิ้น
+    wait
+
+    # รัน main/insertdata.js
+    k6 run --env filename="$filenamex" --env projectname="$projectname" --env date="$folder_report" --env id="$id" --env user="$user" --env durationx="$durationx" --env google_link="$google_sheet" gafana/insertdata.js --no-summary
+elif [ "$status" = "report" ]; then
+    # รันแค่ main/insertdata.js
+    k6 run --env filename="$filenamex" --env projectname="$projectname" --env date="$folder_report" --env id="$id" --env user="$user" --env durationx="$durationx" --env google_link="$google_sheet" gafana/insertdata.js --no-summary
+else
+    echo "Invalid report value: $status"
+fi
