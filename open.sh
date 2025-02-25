@@ -62,15 +62,6 @@ if [ ! -d "report/$folder_report" ]; then
 fi
 
 filenamex="$filename-$user-$id"
-#echo $filenamex
-# รัน main/main.js ก่อนและรอให้เสร็จสิ้น
-#k6 run --env id="$id" --env cid="$cid" --env projectname="$projectname" --env scenariox="$scenario"  --env user="$user" --env durationx="$durationx" --summary-export=report/"$folder_report"/"$filenamex".json main/main.js 
-
-# รอจนกว่าการรัน main/main.js จะเสร็จสิ้น
-#wait
-
-# รัน main/insertdata.js
-#k6 run --env filename="$filenamex" --env projectname="$projectname" --env date="$folder_report" --env id="$id" --env user="$user" --env durationx="$durationx" --env google_link="$google_sheet" gafana/insertdata.js --no-summary
 if [ "$status" = "normal" ]; then
     # รัน main/main.js และรอจนกว่าจะเสร็จ
     k6 run --env id="$id" --env cid="$cid" --env projectname="$projectname" --env scenariox="$scenario" --env user="$user" --env durationx="$durationx" --summary-export=report/"$folder_report"/"$filenamex".json main/main.js
@@ -82,7 +73,11 @@ if [ "$status" = "normal" ]; then
     k6 run --env filename="$filenamex" --env projectname="$projectname" --env date="$folder_report" --env id="$id" --env user="$user" --env durationx="$durationx" --env google_link="$google_sheet" gafana/insertdata.js --no-summary
 elif [ "$status" = "report" ]; then
     # รันแค่ main/insertdata.js
-    k6 run --env filename="$filenamex" --env projectname="$projectname" --env date="$folder_report" --env id="$id" --env user="$user" --env durationx="$durationx" --env google_link="$google_sheet" gafana/insertdata.js --no-summary
+    if [ -f "report/$folder_report/$filenamex.json" ]; then
+        k6 run --env filename="$filenamex" --env projectname="$projectname" --env date="$folder_report" --env id="$id" --env user="$user" --env durationx="$durationx" --env google_link="$google_sheet" gafana/insertdata.js --no-summary
+    else
+        echo "❌ Report not found"
+    fi
 else
-    echo "Invalid report value: $status"
+    echo "❌ Invalid report value: $status"
 fi
