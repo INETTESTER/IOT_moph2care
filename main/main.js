@@ -12,7 +12,7 @@ import { callback_scb } from '../api/getJson.js';
 
 export default function () {    //เรียกใช้ API ใน export default function
   response = ran()
-  response = callback_scb(scenario)
+  //response = callback_scb(scenario)
 
   
   error_check(response);
