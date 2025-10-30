@@ -33,13 +33,13 @@ import { count_emergency } from '../api/22_count_emergency.js';
 
 export default function () {    //เรียกใช้ API ใน export default function
  
-  //response = register()
+  response = register(cid)
   //response = login()
   //response = userprofile()
   //response = graph()
   //response = vitalsign()
   //response = notification()
-  response = count_notification()
+  //response = count_notification()
   //response = webhook_alarm()
   //response = webhook_general()
   //response = monitor_list()
